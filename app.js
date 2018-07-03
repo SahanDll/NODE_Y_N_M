@@ -3,10 +3,14 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var jwt    = require('jsonwebtoken');
+
+var config = require('./config');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var login = require('./controller/login');
+var user = require('./controller/user');
 
 var app = express();
 
@@ -23,6 +27,28 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/login', login);
+app.use('/api/user', user);
+
+app.use(function(req, res, next) {
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+    if (token) {
+        jwt.verify(token, config.secret, function(err, decoded) {
+            if (err) {
+                return res.json({ success: false, message: 'Token Expired'});
+            } else {
+                console.log(decoded);
+                req.decoded = decoded;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({
+            success: false,
+            message: 'Token Not Available'
+        });
+
+    }
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

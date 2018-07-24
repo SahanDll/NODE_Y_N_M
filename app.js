@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var login = require('./controller/login');
 var user = require('./controller/user');
+var setting = require('./controller/setting');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/login', login);
 app.use('/api/user', user);
+app.use('/api/setting', setting);
 
 app.use(function(req, res, next) {
     var token = req.body.token || req.query.token || req.headers['x-access-token'];

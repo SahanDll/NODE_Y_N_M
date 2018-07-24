@@ -21,8 +21,8 @@ router.post('/authenticate', function (req, res) {
                     res.json({status: false, message: 'Authentication failed. Wrong password.'});
                 } else {
                     const payload = {
-                        userName: doc.userName,
-                        role: doc.role
+                        userName: doc[0].userName,
+                        role: doc[0].role
                     };
                     var token = jwt.sign(payload, config.secret, {
                         expiresIn: 60 * 60
@@ -32,7 +32,9 @@ router.post('/authenticate', function (req, res) {
                         status: true,
                         message: 'Authentication success.',
                         token: token,
-                        expires: 60 * 60
+                        expires: 60 * 60,
+                        profileId: doc[0].profileId,
+                        userName: doc[0].userName
                     });
                 }
 
